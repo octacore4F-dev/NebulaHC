@@ -8,20 +8,27 @@ class main(GoslingAgent):
 
     def run(agent):
        #Precomputing variables
+       team8 = (self.index + 1) % 2
        goal_to_me = agent.me.location - agent.friend_goal.location
        my_goal_to_ball,ball_dist = (agent.ball.location - agent.friend_goal.location).magnitude()
        
-       #Checking if Nebula, their opponents, and their teammate are within 2000 UU of the ball
+       #Checking the time it'll take for each player to get to the ball (very roughly)
+       def timetoball(me):
+           dist = agent.ball.location - me.location
+           for i in 600:
+               dist -= (agent.ball.velocity - (me.velocity + agent.ball.velocity.normalize()*10*i))
+               if dist < 100:
+                   return i/10
        me_close = (agent.me.location - agent.ball.location).magnitude() < 2000
        oppo_0_close = (agent.foes[0].location - agent.ball.location).magnitude() < 2000
        oppo_1_close = (agent.foes[1].location - agent.ball.location).magnitude() < 2000
-       teammate_close = ((agent.friends[(self.index+1)%2].location - agent.ball.location).magnitude() < 2000)
+       teammate_close = ((agent.friends[team8].location - agent.ball.location).magnitude() < 2000)
        
-       #Checking if Nebula, their opponents, and their teammate are on their side of the pitch
+       #Checking if Nebula, their opponents, and their teammate are on their respective team's side of the pitch
        me_onside = (agent.me.location.y < -200) if (agent.friend_goal.y < 0) else (agent.me.location.y > 200)
        oppo_0_onside = (agent.foes[0].location.y < -200) if (agent.foe_goal.y < 0) else (agent.foes[0].location.y > 200)
        oppo_1_onside = (agent.foes[1].location.y < -200) if (agent.foe_goal.y < 1) else (agent.foes[1].location.y > 200)
-       teammate_onside = (agent.friends[(self.index+1)%2].location.y < -200) if (agent.friend_goal.y < 1) else (agent.friends[(self.index+1)%2].location.y > 200)
+       teammate_onside = (agent.friends[team8].location.y < -200) if (agent.friend_goal.y < 1) else (agent.friends[team8].location.y > 200)
        
        #Finding the closest opponent
        closest_oppo = 0
@@ -38,13 +45,15 @@ class main(GoslingAgent):
        if len(agent.stack) < 1:
            if agent.kickoff_flag:
                agent.push(kickoff())
-           elif me_close and not (oppo_0_close or oppo_1_close):
+           elif timetoball(agent.me) < 1 and not ((timetoball(agent.foes[0]) < 1) or (timetoball(agent.foes[1]) < 1)):
                left_field = Vector3(4200 * -side(agent.team), agent.ball.location.y + (1000 * -side(agent.team)), 0)
                right_field = Vector3(4200 * side(agent.team), agent.ball.location.y + (1000 * side(agent.team)), 0)
-               targets = {"goal":(agent.foe_goal,agent.foe_goal), "upfield": (left_field,right_field)}
+               targets = {"goal":(agent.foe_goal,agent.foe_goal), "upfield": (left_field,right_field), "pass": (agent.friends[team8].location + agent.friends[team8].velocity,agent.friends[team8].location + agent.friends[team8].velocity)}
                shots = find_hits(agent,targets)
                if len(shots["goal"]) > 0:
                    agent.push(shots["goal"][0])
+               if len(shots["pass"]) > 0 and (agent.friends[team8].location - agent.foes[0].location).magnitude() > 2000 and (agent.friends[team8].location - agent.foes[1].location).magnitude() > 2000:
+                   agent.push(shots["pass"][0])
                elif len(shots["upfield"]) > 0 and abs(agent.friend_goal.location.y - agent.ball.location.y) < 8490:
                    agent.push(shots["upfield"][0])
                else:
