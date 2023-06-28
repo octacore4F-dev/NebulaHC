@@ -17,8 +17,6 @@ class main(GoslingAgent):
        oppo_1_close = (agent.foes[1].location - agent.ball.location).magnitude() < 2000
        teammate_close = ((agent.friends[(self.index+1)%2].location - agent.ball.location).magnitude() < 2000)
        
-       has_boost = agent.me.boost > 30
-       
        #Checking if Nebula, their opponents, and their teammate are on their side of the pitch
        me_onside = (agent.me.location.y < -200) if (agent.friend_goal.y < 0) else (agent.me.location.y > 200)
        oppo_0_onside = (agent.foes[0].location.y < -200) if (agent.foe_goal.y < 0) else (agent.foes[0].location.y > 200)
@@ -51,7 +49,7 @@ class main(GoslingAgent):
                    agent.push(shots["upfield"][0])
                else:
                    return_to_goal = True
-           elif not me_onside and not has_boost:
+           elif not me_onside and agent.me.boost < 30:
                boosts = [boost for boost in agent.boosts if boost.large and boost.active and abs(agent.friend_goal.location.y - boost.location.y) - 200 < abs(agent.friend_goal)]
                if len(boosts) > [0]:
                  for boost in boosts:
