@@ -15,9 +15,9 @@ class main(GoslingAgent):
        oppo_0_close = (agent.foes[0].location - agent.ball.location).magnitude() < 2000
        oppo_1_close = (agent.foes[1].location - agent.ball.location).magnitude() < 2000
        has_boost = agent.me.boost > 30
-       me_onside = agent.me.location.y < -200
-       oppo_0_onside = agent.foes[0].location.y > 200
-       oppo_1_onside = agent.foes[1].location.y > 200
+       me_onside = (agent.me.location.y < -200) if (agent.friend_goal.y < 0) else (agent.me.location.y > 200)
+       oppo_0_onside = (agent.foes[0].location.y < -200) if (agent.foe_goal.y < 0) else (agent.foes[0].location.y > 200)
+       oppo_1_onside = (agent.foes[1].location.y < -200) if (agent.foe_goal.y < 1) else (agent.foes[1].location.y > 200)
        closest_oppo = 0
        if (agent.me.location - agent.foes[1].location).magnitude() < (agent.me.location - agent.foes[0].location).magnitude():
           closest_oppo = 1
