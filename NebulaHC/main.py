@@ -19,10 +19,10 @@ class main(GoslingAgent):
                dist -= (agent.ball.velocity - (me.velocity + agent.ball.velocity.normalize()*10*i))
                if dist < 100:
                    return i/10
-       me_close = (agent.me.location - agent.ball.location).magnitude() < 2000
-       oppo_0_close = (agent.foes[0].location - agent.ball.location).magnitude() < 2000
-       oppo_1_close = (agent.foes[1].location - agent.ball.location).magnitude() < 2000
-       teammate_close = ((agent.friends[team8].location - agent.ball.location).magnitude() < 2000)
+       me_toball = timetoball(agent.me)
+       oppo_0_toball = timetoball(agent.foes[0])
+       oppo_1_toball = timetoball(agent.foes[1])
+       teammate_toball = timetoball(agent.friends[team8])
        
        #Checking if Nebula, their opponents, and their teammate are on their respective team's side of the pitch
        me_onside = (agent.me.location.y < -200) if (agent.friend_goal.y < 0) else (agent.me.location.y > 200)
@@ -45,7 +45,7 @@ class main(GoslingAgent):
        if len(agent.stack) < 1:
            if agent.kickoff_flag:
                agent.push(kickoff())
-           elif timetoball(agent.me) < 1 and not ((timetoball(agent.foes[0]) < 1) or (timetoball(agent.foes[1]) < 1)):
+           elif me_toball < 1 and not (oppo_0_toball < 1) or (oppo_1_toball < 1)):
                left_field = Vector3(4200 * -side(agent.team), agent.ball.location.y + (1000 * -side(agent.team)), 0)
                right_field = Vector3(4200 * side(agent.team), agent.ball.location.y + (1000 * side(agent.team)), 0)
                targets = {"goal":(agent.foe_goal,agent.foe_goal), "upfield": (left_field,right_field), "pass": (agent.friends[team8].location + agent.friends[team8].velocity,agent.friends[team8].location + agent.friends[team8].velocity)}
