@@ -46,13 +46,13 @@ class main(GoslingAgent):
            if agent.kickoff_flag:
                agent.push(kickoff())
            elif me_toball < 1 and not (oppo_0_toball < 1) or (oppo_1_toball < 1)):
-               left_field = Vector3(4200 * -side(agent.team), agent.ball.location.y + (1000 * -side(agent.team)), 0)
-               right_field = Vector3(4200 * side(agent.team), agent.ball.location.y + (1000 * side(agent.team)), 0)
-               targets = {"goal":(agent.foe_goal,agent.foe_goal), "upfield": (left_field,right_field), "pass": (agent.friends[team8].location + agent.friends[team8].velocity,agent.friends[team8].location + agent.friends[team8].velocity)}
+               left_field = Vector3(3968, (agent.foe_goal.y/abs(agent.foe_goal.y))*5120, 0)
+               right_field = Vector3(-3968, (agent.foe_goal.y/abs(agent.foe_goal.y))*5120, 0)
+               targets = {"goal":(agent.foe_goal.left_post,agent.foe_goal.right_post), "upfield": (left_field,right_field), "pass": (agent.friends[team8].location + agent.friends[team8].velocity/2,agent.friends[team8].location + agent.friends[team8].velocity*1.5)}
                shots = find_hits(agent,targets)
                if len(shots["goal"]) > 0:
                    agent.push(shots["goal"][0])
-               if len(shots["pass"]) > 0 and (agent.friends[team8].location - agent.foes[0].location).magnitude() > 2000 and (agent.friends[team8].location - agent.foes[1].location).magnitude() > 2000:
+               elif len(shots["pass"]) > 0 and (agent.friends[team8].location - agent.foes[0].location).magnitude() > 2000 and (agent.friends[team8].location - agent.foes[1].location).magnitude() > 2000:
                    agent.push(shots["pass"][0])
                elif len(shots["upfield"]) > 0 and abs(agent.friend_goal.location.y - agent.ball.location.y) < 8490:
                    agent.push(shots["upfield"][0])
