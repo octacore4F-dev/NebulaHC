@@ -10,7 +10,7 @@ class main(GoslingAgent):
        #Precomputing variables
        team8 = 0 if (agent.friends[0].location != agent.me.location) else 1
        goal_to_me = agent.me.location - agent.friend_goal.location
-       my_goal_to_ball,ball_dist = (agent.ball.location - agent.friend_goal.location).magnitude()
+       ball_dist = (agent.ball.location - agent.friend_goal.location).magnitude()
        
        #Checking the time it'll take for each player to get to the ball (very roughly)
        def timetoball(me):
