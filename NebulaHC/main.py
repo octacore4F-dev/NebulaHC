@@ -44,7 +44,9 @@ class main(GoslingAgent):
        return_to_goal = False
        if len(agent.stack) < 1:
            if agent.kickoff_flag:
-               agent.push(kickoff())
+               if ((agent.me.location.y - agent.friends[team8].location.y) > 0) or (((agent.me.location.y - agent.friends[team8].location.y) == 0) and (agent.me.location.x > agent.friends[team8].location.x)):
+                   agent.push(kickoff())
+               else: agent.push(goto(agent.friend_goal.location))
            elif (me_toball + 0.5 < oppo_0_toball) and (me_toball +.5 < oppo_1_toball) and (me_toball < teammate_toball):
                left_field = Vector3(3968, (agent.foe_goal.y/abs(agent.foe_goal.y))*5120, 0)
                right_field = Vector3(-3968, (agent.foe_goal.y/abs(agent.foe_goal.y))*5120, 0)
@@ -72,7 +74,7 @@ class main(GoslingAgent):
                agent.push(short_shot(agent.foe_goal.location))
 
        if return_to_goal == True:
-         goto(agent.friend_goal.location)
+         agent.push(goto(agent.friend_goal.location))
 
        if (((agent.me.location - agent.foes[0].location).magnitude() < 250) or ((agent.me.location - agent.foes[1].location).magnitude() < 250)) and ball_dist < 750:
            agent.controller.boost = True
