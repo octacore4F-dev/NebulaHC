@@ -1,6 +1,6 @@
-from tools import  *
-from objects import *
-from routines import *
+from util.tools import  *
+from util.objects import *
+from util.routines import *
 
 #This file is for strategy
 
