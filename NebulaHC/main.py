@@ -45,7 +45,7 @@ class main(GoslingAgent):
        if len(agent.stack) < 1:
            if agent.kickoff_flag:
                agent.push(kickoff())
-           elif me_toball < 1 and not (oppo_0_toball < 1) or (oppo_1_toball < 1)):
+           elif (me_toball + 0.5 < oppo_0_toball) and (me_toball +.5 < oppo_1_toball) and (me_toball < teammate_toball):
                left_field = Vector3(3968, (agent.foe_goal.y/abs(agent.foe_goal.y))*5120, 0)
                right_field = Vector3(-3968, (agent.foe_goal.y/abs(agent.foe_goal.y))*5120, 0)
                targets = {"goal":(agent.foe_goal.left_post,agent.foe_goal.right_post), "upfield": (left_field,right_field), "pass": (agent.friends[team8].location + agent.friends[team8].velocity/2,agent.friends[team8].location + agent.friends[team8].velocity*1.5)}
@@ -58,7 +58,7 @@ class main(GoslingAgent):
                    agent.push(shots["upfield"][0])
                else:
                    return_to_goal = True
-           elif not me_onside and agent.me.boost < 30:
+           elif me_onside and (agent.me.boost < 30) and (teammate_toball + 0.5 < oppo_0_toball) and (teammate_toball + 0.5 < oppo_1_toball):
                boosts = [boost for boost in agent.boosts if boost.large and boost.active and abs(agent.friend_goal.location.y - boost.location.y) - 200 < abs(agent.friend_goal)]
                if len(boosts) > [0]:
                  for boost in boosts:
@@ -72,12 +72,8 @@ class main(GoslingAgent):
                agent.push(short_shot(agent.foe_goal.location))
 
        if return_to_goal == True:
-         relative_target = agent.friend_goal.location - agent.me.location
-         angles = defaultPD(agent, agent.me.local(relative_target))
-         defaultThrottle(agent,2300)
-         agent.controller.boost = False if abs(angles[1]) > 0.5 or agent.me.airborne else agent.controller.boost
-         agent.controller.handbrake = True if abs(angles[1]) > 2.8 else False
+         goto(agent.friend_goal.location)
 
        if (((agent.me.location - agent.foes[0].location).magnitude() < 250) or ((agent.me.location - agent.foes[1].location).magnitude() < 250)) and ball_dist < 750:
            agent.controller.boost = True
-           agent.push(goto(agent.foes[closest_oppo].location))
+           agent.push(goto(agent.foes[closest_oppo].location + (agent.foes[closest_oppo].velocity/3))
