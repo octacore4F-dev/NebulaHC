@@ -15,7 +15,7 @@ class main(GoslingAgent):
        #Checking the time it'll take for each player to get to the ball (very roughly)
        def timetoball(me):
            dist = agent.ball.location - me.location
-           for i in 600:
+           for i in range(600):
                dist -= (agent.ball.velocity - (me.velocity + agent.ball.velocity.normalize()*10*i))
                if dist < 100:
                    return i/10
