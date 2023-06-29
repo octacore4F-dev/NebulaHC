@@ -8,7 +8,7 @@ class main(GoslingAgent):
 
     def run(agent):
        #Precomputing variables
-       team8 = (self.index + 1) % 2
+       team8 = (agent.me.self + 1) % 2
        goal_to_me = agent.me.location - agent.friend_goal.location
        my_goal_to_ball,ball_dist = (agent.ball.location - agent.friend_goal.location).magnitude()
        
