@@ -17,7 +17,7 @@ class main(GoslingAgent):
            dist = agent.ball.location - me.location
            for i in range(600):
                dist -= (agent.ball.velocity - (me.velocity + agent.ball.velocity.normalize()*10*i))
-               if dist < 100:
+               if dist.magnitude() < 100:
                    return i/10
        me_toball = timetoball(agent.me)
        oppo_0_toball = timetoball(agent.foes[0])
@@ -25,10 +25,10 @@ class main(GoslingAgent):
        teammate_toball = timetoball(agent.friends[team8])
        
        #Checking if Nebula, their opponents, and their teammate are on their respective team's side of the pitch
-       me_onside = (agent.me.location.y < -200) if (agent.friend_goal.y < 0) else (agent.me.location.y > 200)
-       oppo_0_onside = (agent.foes[0].location.y < -200) if (agent.foe_goal.y < 0) else (agent.foes[0].location.y > 200)
-       oppo_1_onside = (agent.foes[1].location.y < -200) if (agent.foe_goal.y < 1) else (agent.foes[1].location.y > 200)
-       teammate_onside = (agent.friends[team8].location.y < -200) if (agent.friend_goal.y < 1) else (agent.friends[team8].location.y > 200)
+       me_onside = (agent.me.location.y < -200) if (agent.friend_goal.location.y < 0) else (agent.me.location.y > 200)
+       oppo_0_onside = (agent.foes[0].location.y < -200) if (agent.foe_goal.location.y < 0) else (agent.foes[0].location.y > 200)
+       oppo_1_onside = (agent.foes[1].location.y < -200) if (agent.foe_goal.location.y < 1) else (agent.foes[1].location.y > 200)
+       teammate_onside = (agent.friends[team8].location.y < -200) if (agent.friend_goal.location.y < 1) else (agent.friends[team8].location.y > 200)
        
        #Finding the closest opponent
        closest_oppo = 0
@@ -44,10 +44,11 @@ class main(GoslingAgent):
        return_to_goal = False
        if len(agent.stack) < 1:
            if agent.kickoff_flag:
-               if ((agent.me.location.y - agent.friends[team8].location.y) > 0) or (((agent.me.location.y - agent.friends[team8].location.y) == 0) and (agent.me.location.x > agent.friends[team8].location.x)):
+               if ((agent.me.location.y - agent.friends[team8].location.y) > 0) or (((agent.me.location.y - agent.friends[team8].location.y) == 0) and ((agent.me.location.x > agent.friends[team8].location.x) if (agent.me.y < 0) else (agent.me.location.x < agent.friends[team8].location.x))):
                    agent.push(kickoff())
-               else: agent.push(goto(agent.friend_goal.location))
-           elif (me_toball + 0.5 < oppo_0_toball) and (me_toball +.5 < oppo_1_toball) and (me_toball < teammate_toball):
+               else: 
+                   agent.push(goto(agent.friend_goal.location))
+           elif (me_toball + 0.5 < oppo_0_toball) and (me_toball + 0.5 < oppo_1_toball) and (me_toball < teammate_toball):
                left_field = Vector3(3968, (agent.foe_goal.y/abs(agent.foe_goal.y))*5120, 0)
                right_field = Vector3(-3968, (agent.foe_goal.y/abs(agent.foe_goal.y))*5120, 0)
                targets = {"goal":(agent.foe_goal.left_post,agent.foe_goal.right_post), "upfield": (left_field,right_field), "pass": (agent.friends[team8].location + agent.friends[team8].velocity/2,agent.friends[team8].location + agent.friends[team8].velocity*1.5)}
